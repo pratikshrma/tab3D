@@ -1,0 +1,24 @@
+.ringContainer {
+  /* outline: 10px dotted brown; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 400px;
+  width: 400px;
+}
+
+.ring1 {
+  /* outline: 1px solid red; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.ring2 {
+  /* outline: 1px solid blue; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
