@@ -1,9 +1,16 @@
 import { Canvas } from "@react-three/fiber";
 import Experience from "./Components/Experience";
 import PostProcessing from "./Components/PostProcessing";
-import { Leva } from "leva";
+import { useControls } from "leva";
 
 const App = () => {
+  const {color}=useControls({
+    color:{
+      value:'#f4e6d0'
+    }
+  })
+
+  
   return (
     <div className="canvas-container">
       <Canvas
@@ -16,8 +23,8 @@ const App = () => {
           alpha: true,
         }}
       >
-        <Leva hidden/>
-        <color attach="background" args={["#F4E6D0"]} />
+        {/* <Leva hidden/> */}
+        <color attach="background" args={[color]} />
         <PostProcessing />
         <Experience />
       </Canvas>
