@@ -12,7 +12,7 @@ export class SketchEffect extends Effect {
     uHatchingPatternDensity2 = 240.0,
     uHatchingPatternDensity3 = -110.0,
     uHatchingPatternDensity4 = 116.0,
-    uHatchingDarkness = 0.69,
+    uHatchingDarkness = 1,
     uEdgeDarkness = 0.07,
     uContrast = 1.8,
     uBrightness = 0.6,

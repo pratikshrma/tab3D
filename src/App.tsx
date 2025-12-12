@@ -16,12 +16,11 @@ const App = () => {
           alpha: true,
         }}
       >
-        <Leva hidden/>
-        <color attach="background" args={["#F7E5CD"]} />
+        {/* <Leva hidden/> */}
+        <color attach="background" args={["#F4E6D0"]} />
         <PostProcessing />
         <Experience />
       </Canvas>
-      <div className="vignette"></div>
     </div>
   );
 };

@@ -54,7 +54,7 @@ const Experience = () => {
   useEffect(() => {
     const handleResize = () => {
       console.log(window.innerWidth);
-      setSpacing(window.innerWidth / 200);
+      setSpacing(window.innerWidth / 250);
     };
 
     window.addEventListener("resize", handleResize);
