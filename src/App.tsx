@@ -16,7 +16,7 @@ const App = () => {
           alpha: true,
         }}
       >
-        {/* <Leva hidden/> */}
+        <Leva hidden/>
         <color attach="background" args={["#F4E6D0"]} />
         <PostProcessing />
         <Experience />
