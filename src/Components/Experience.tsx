@@ -8,13 +8,15 @@ import { useControls } from "leva";
 
 const Experience = () => {
   const baseModels = [
-    { src: "/models/Pot.glb", scale: 0.7 },
-    { src: "/models/Vallaku.glb", scale: 0.8 },
-    // { src: "/models/Nandi.glb", scale: 0.6 },
+    { src: "/models/Vallaku.glb", scale: 0.8, position: [0, 0, 0], rotation: [0, 0, 0] },
+    { src: "/models/Pot.glb", scale: 0.9, position: [0, 0.5, 0], rotation: [Math.PI/12, 0, 0] },
+    { src: "/models/Nandi.glb", scale: 0.6, position: [0, 0, 0], rotation: [0, 0, 0] },
+    { src: "/models/ExtraTABdecor.glb", scale: 10.0, position: [0, 0, 0], rotation: [0, 0, 0] },
   ];
 
   // Create an "infinite" list of models by repeating the base models
   const infiniteModels = Array(100).fill(baseModels).flat(); // Repeat 100 times
+
 
   const initialSpacing = 6;
   const initialIndex = 50;
@@ -47,7 +49,7 @@ const Experience = () => {
 
   // Maintain relative position on resize
   useEffect(() => {
-      api.start({ x: -activeIndex.current * spacing, immediate: true });
+    api.start({ x: -activeIndex.current * spacing, immediate: true });
   }, [spacing, api]);
 
   const groupRef = useRef<THREE.Group>(null!);
@@ -68,8 +70,9 @@ const Experience = () => {
     onWheel: ({ active, delta: [dx, dy] }) => {
       if (active) {
         const currentX = x.get();
-        api.start({ x: currentX + (dx + dy) * wheelSensitivity * 0.4
-         }); 
+        api.start({
+          x: currentX + (dx + dy) * wheelSensitivity * 0.4
+        });
       } else {
         // Snap to nearest
         const currentX = x.get();
@@ -82,7 +85,7 @@ const Experience = () => {
     }
   });
 
-  
+
   return (
     <>
       <Lights />
@@ -98,11 +101,20 @@ const Experience = () => {
       >
         {infiniteModels.map((_each, index) => {
           const modelToDisplay = baseModels[index % baseModels.length];
+          const carouselX = index * spacing;
+          const carouselY = -1;
+          const carouselZ = 0;
           return (
             <CarosolItems
-              position={[index * spacing, -1, 0]}
+              position={[
+                carouselX,
+                carouselY,
+                carouselZ
+              ]}
               location={modelToDisplay.src}
               scale={[modelToDisplay.scale, modelToDisplay.scale, modelToDisplay.scale]}
+              rawPosition={[modelToDisplay.position[0], modelToDisplay.position[1], modelToDisplay.position[2]]}
+              rawRotation={[modelToDisplay.rotation[0], modelToDisplay.rotation[1], modelToDisplay.rotation[2]]}
               key={index}
               index={index}
             />

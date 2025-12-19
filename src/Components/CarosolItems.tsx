@@ -9,22 +9,22 @@ interface props {
   position: [number, number, number];
   scale: [number, number, number];
   index: number;
+  rawPosition:[number,number,number];
+  rawRotation:[number,number,number];
 }
-const CarosolItems = ({ location, position, scale, index }: props) => {
+const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation }: props) => {
   const frame = useTexture([
     "/assets/frame1.png",
     "/assets/frame2.png",
     "/assets/frame3.png",
-    "/assets/frame4.png"
   ]);
-
 
   const { scene } = useGLTF(location);
   const modelRef = useRef<THREE.Group>(null!);
   const backgroundRef = useRef<THREE.Mesh>(null!)
 
   const timeline = useRef<gsap.core.Timeline>(null!);
-  const animationState = useRef({ scaleProgress: 0, rotationProgress: 0 });
+  const animationState = useRef({ scaleProgress: 0 });
 
   useEffect(() => {
     timeline.current = gsap
@@ -53,9 +53,10 @@ const CarosolItems = ({ location, position, scale, index }: props) => {
         3 + 0.05 * scaleProgress
       )
 
-      // backgroundRef.current.scale.x += scaleProgress*0.05
-
-      modelRef.current.rotation.y += 0.005;
+      // Combine base rotation (from rawRotation) with the continuous animation
+      modelRef.current.rotation.x = rawRotation[0];
+      modelRef.current.rotation.y += rawRotation[1] + 0.005;
+      modelRef.current.rotation.z = rawRotation[2];
     }
   });
 
@@ -71,15 +72,19 @@ const CarosolItems = ({ location, position, scale, index }: props) => {
         onPointerOut={() => {
           timeline.current?.reverse();
         }}
-        
+
       >
-        <planeGeometry args={index % 2 == 0 ? [1.6, 2] : [2, 1.6]} />
-        <meshStandardMaterial map={frame[Math.round(Math.random() * 3)]} transparent={true} />
+<planeGeometry args={index % 2 == 0 ? [1.6, 2] as const : [2, 1.5] as const} />
+        <meshStandardMaterial map={frame[index % 2]} transparent={true} />
       </mesh>
       <primitive
         ref={modelRef}
         object={scene.clone()}
-        position={position}
+        position={[
+          position[0] + rawPosition[0],
+          position[1] + rawPosition[1],
+          position[2] + rawPosition[2],
+        ]}
         scale={scale}
       />
     </>
