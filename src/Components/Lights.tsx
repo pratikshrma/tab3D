@@ -1,7 +1,9 @@
 const Lights = () => {
-  return (
+
+    return (
     <>
-<directionalLight position={[3,3,3]} color={'#ffffff'} intensity={7}/>
+      <ambientLight color={'#ffffff'} intensity={0} />
+      <directionalLight position={[3, 3, 3]} color={'#ffffff'} intensity={0} />
     </>
   )
 }

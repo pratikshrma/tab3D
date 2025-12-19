@@ -4,75 +4,99 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { a, useSpring } from "@react-spring/three";
 import { useGesture } from "@use-gesture/react";
+import { useControls } from "leva";
 
 const Experience = () => {
   const baseModels = [
     { src: "/models/Pot.glb", scale: 0.7 },
-    { src: "/models/TABDecor2.glb", scale: 1 },
-    { src: "/models/TabNandiLowPoly.glb", scale: 0.8 },
+    { src: "/models/Vallaku.glb", scale: 0.8 },
+    // { src: "/models/Nandi.glb", scale: 0.6 },
   ];
 
   // Create an "infinite" list of models by repeating the base models
   const infiniteModels = Array(100).fill(baseModels).flat(); // Repeat 100 times
 
-  const [spacing, setSpacing] = useState(10);
+  const initialSpacing = 6;
+  const initialIndex = 50;
+
+  const [spacing] = useState(initialSpacing);
+  const activeIndex = useRef(initialIndex);
+
+  const { dragSensitivity, wheelSensitivity, mass, tension, friction } = useControls("Carousel Settings", {
+    dragSensitivity: { value: 0.02, min: 0.001, max: 0.1, step: 0.001 },
+    wheelSensitivity: { value: 0.02, min: 0.1, max: 10, step: 0.1 },
+    mass: { value: 1, min: 0.1, max: 10 },
+    tension: { value: 150, min: 10, max: 500 },
+    friction: { value: 20, min: 1, max: 100 },
+  });
 
   const [{ x }, api] = useSpring(() => ({
-    x: -500,
+    x: -initialIndex * initialSpacing,
     config: {
-      mass: 1,
-      tension: 150,
-      friction: 20,
+      mass,
+      tension,
+      friction,
       precision: 0.01,
     },
   }));
 
-  const groupRef = useRef<THREE.Group>(null!);
+  // Update spring config when Leva values change
+  useEffect(() => {
+    api.start({ config: { mass, tension, friction } });
+  }, [mass, tension, friction, api]);
 
-  const activeIndex = useRef(50);
+  // Maintain relative position on resize
+  useEffect(() => {
+      api.start({ x: -activeIndex.current * spacing, immediate: true });
+  }, [spacing, api]);
+
+  const groupRef = useRef<THREE.Group>(null!);
 
   const bind = useGesture({
     onDrag: ({ down, movement: [mx] }) => {
-      const sensitivity = 0.02;
-
       if (down) {
-        api.start({ x: -activeIndex.current * spacing + mx * sensitivity });
+        api.start({ x: -activeIndex.current * spacing + mx * dragSensitivity });
       } else {
         const currentX = x.get();
         const newIndex = Math.round(-currentX / spacing);
-
-
         activeIndex.current = newIndex;
-
         api.start({
           x: -activeIndex.current * spacing,
         });
       }
     },
+    onWheel: ({ active, delta: [dx, dy] }) => {
+      if (active) {
+        const currentX = x.get();
+        api.start({ x: currentX + (dx + dy) * wheelSensitivity * 0.4
+         }); 
+      } else {
+        // Snap to nearest
+        const currentX = x.get();
+        const newIndex = Math.round(-currentX / spacing);
+        activeIndex.current = newIndex;
+        api.start({
+          x: -activeIndex.current * spacing,
+        });
+      }
+    }
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      console.log(window.innerWidth);
-      setSpacing(window.innerWidth / 250);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
+  
   return (
     <>
       <Lights />
+      <mesh position={[0, 0, -2]} {...bind()}>
+        <planeGeometry args={[100, 10]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
       <a.group
-        {...bind()}
         ref={groupRef}
         position-x={x}
         position-y={1}
         renderOrder={1}
       >
         {infiniteModels.map((_each, index) => {
-          // Calculate the actual model to display based on the effective index
           const modelToDisplay = baseModels[index % baseModels.length];
           return (
             <CarosolItems
@@ -80,6 +104,7 @@ const Experience = () => {
               location={modelToDisplay.src}
               scale={[modelToDisplay.scale, modelToDisplay.scale, modelToDisplay.scale]}
               key={index}
+              index={index}
             />
           );
         })}

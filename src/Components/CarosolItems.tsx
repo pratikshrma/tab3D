@@ -2,59 +2,82 @@ import { useGLTF, useTexture } from "@react-three/drei";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useFrame } from "@react-three/fiber";
 
 interface props {
   location: string;
   position: [number, number, number];
   scale: [number, number, number];
+  index: number;
 }
-const CarosolItems = ({ location, position, scale }: props) => {
-  const frame = useTexture("/assets/frame.png");
+const CarosolItems = ({ location, position, scale, index }: props) => {
+  const frame = useTexture([
+    "/assets/frame1.png",
+    "/assets/frame2.png",
+    "/assets/frame3.png",
+    "/assets/frame4.png"
+  ]);
+
+
   const { scene } = useGLTF(location);
   const modelRef = useRef<THREE.Group>(null!);
+  const backgroundRef = useRef<THREE.Mesh>(null!)
 
   const timeline = useRef<gsap.core.Timeline>(null!);
+  const animationState = useRef({ scaleProgress: 0, rotationProgress: 0 });
 
   useEffect(() => {
-    if (modelRef.current) {
-      timeline.current = gsap
-        .timeline({ paused: true })
-        .to(modelRef.current.scale, {
-          x: scale[0] + 0.05,
-          y: scale[1] + 0.05,
-          z: scale[2] + 0.05,
-          duration: 0.5,
-          ease: "power2.out",
-        })
-        .to(
-          modelRef.current.rotation,
-          {
-            y: `+=${Math.PI}`,
-            duration: 1,
-            ease: "power4.inOut",
-          },
-          "<",
-        );
-    }
+    timeline.current = gsap
+      .timeline({ paused: true })
+      .to(animationState.current, {
+        scaleProgress: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      })
     return () => {
       timeline.current?.kill();
     };
   }, []);
 
+  useFrame(() => {
+    if (modelRef.current) {
+      const { scaleProgress } = animationState.current;
+      modelRef.current.scale.set(
+        scale[0] + 0.05 * scaleProgress,
+        scale[1] + 0.05 * scaleProgress,
+        scale[2] + 0.05 * scaleProgress
+      );
+      backgroundRef.current.scale.set(
+        3 + 0.05 * scaleProgress,
+        3 + 0.05 * scaleProgress,
+        3 + 0.05 * scaleProgress
+      )
+
+      // backgroundRef.current.scale.x += scaleProgress*0.05
+
+      modelRef.current.rotation.y += 0.005;
+    }
+  });
+
   return (
     <>
-      <mesh position={[position[0],position[1],position[2]-1]} scale={[3,3,3]}>
-        <planeGeometry args={[1.6, 2]} />
-        <meshStandardMaterial map={frame} transparent={true}/>
-      </mesh>
-      <primitive
-        ref={modelRef}
+      <mesh
+        ref={backgroundRef}
+        position={[position[0], position[1], position[2] - 1]}
+        scale={[3, 3, 3]}
         onPointerOver={() => {
           timeline.current?.play();
         }}
         onPointerOut={() => {
           timeline.current?.reverse();
         }}
+        
+      >
+        <planeGeometry args={index % 2 == 0 ? [1.6, 2] : [2, 1.6]} />
+        <meshStandardMaterial map={frame[Math.round(Math.random() * 3)]} transparent={true} />
+      </mesh>
+      <primitive
+        ref={modelRef}
         object={scene.clone()}
         position={position}
         scale={scale}
