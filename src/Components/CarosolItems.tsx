@@ -15,10 +15,6 @@ interface props {
   spacing: number;
 }
 
-function lerp(start, end, t) {
-  return start * (1 - t) + end * t;
-}
-
 const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation, spacing }: props) => {
   const frame = useTexture([
     "/assets/frame1.png",
@@ -63,7 +59,7 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
     if (dist < scaleRange) {
       const normalizedDist = dist / scaleRange;
       const curve = Math.cos(normalizedDist * (Math.PI / 2));
-      positionScaleFactor = 1 + curve * 0.5; // Max scale boost is 0.5 (1.5x total)
+      positionScaleFactor = 1 + curve * 1.0; // Max scale boost is 1.0 (2.0x total)
     }
     const rotation = (globalX / spacing) * Math.PI * 2;
 
@@ -71,9 +67,9 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
       const { scaleProgress } = animationState.current;
 
       // Base scale + Hover effect
-      const baseScaleX = scale[0] + 0.05 * scaleProgress;
-      const baseScaleY = scale[1] + 0.05 * scaleProgress;
-      const baseScaleZ = scale[2] + 0.05 * scaleProgress;
+      const baseScaleX = scale[0] + 0.1 * scaleProgress;
+      const baseScaleY = scale[1] + 0.1 * scaleProgress;
+      const baseScaleZ = scale[2] + 0.1 * scaleProgress;
 
       // Apply position-based scaling
       modelRef.current.scale.set(

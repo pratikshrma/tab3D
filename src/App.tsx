@@ -23,7 +23,7 @@ const ResponsiveCamera = ({
 const App = () => {
   const { zoom } = useControls({
     "Camera Controls": folder({
-      zoom: { value: 65, min: 0.0, max: 90 },
+      zoom: { value: 53, min: 0.0, max: 90 },
     })
   })
 
@@ -44,7 +44,6 @@ const App = () => {
         }}
       >
         <ResponsiveCamera zoom={zoom} />
-
         {/* <Perf /> */}
         <color attach="background" args={[color]} />
         <Environment files="/assets/warm_restaurant_1k.exr" />
