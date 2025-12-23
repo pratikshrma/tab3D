@@ -49,7 +49,7 @@ const Experience = () => {
 
 
   const { dragSensitivity, wheelSensitivity, mass, tension, friction } = useControls("Carousel Settings", {
-    dragSensitivity: { value: 0.05, min: 0.001, max: 0.3, step: 0.001 },
+    dragSensitivity: { value: 0.02, min: 0.001, max: 0.3, step: 0.001 },
     wheelSensitivity: { value: 0.2, min: 0.1, max: 10, step: 0.1 },
     mass: { value: 1, min: 0.1, max: 10 },
     tension: { value: 160, min: 10, max: 500 },
