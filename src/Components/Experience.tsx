@@ -5,6 +5,8 @@ import * as THREE from "three";
 import { a, useSpring } from "@react-spring/three";
 import { useGesture } from "@use-gesture/react";
 import { useControls } from "leva";
+import { useFrame } from "@react-three/fiber";
+import { useStore } from "../store";
 
 const calculateSpacing = () => {
   const calc = (window.innerWidth / 200) * 1.3
@@ -13,9 +15,6 @@ const calculateSpacing = () => {
 
 const Experience = () => {
   const initialIndex = 50;
-
-
-
   const [spacing, setSpacing] = useState(calculateSpacing());
 
   useEffect(() => {
@@ -40,7 +39,6 @@ const Experience = () => {
   useEffect(() => {
     const handleWindowResizing = () => {
       setSpacing(calculateSpacing())
-      console.log("Window width changed:", window.innerWidth);
     };
     window.addEventListener('resize', handleWindowResizing);
     return () => {
@@ -50,10 +48,10 @@ const Experience = () => {
 
 
   const { dragSensitivity, wheelSensitivity, mass, tension, friction } = useControls("Carousel Settings", {
-    dragSensitivity: { value: 0.02, min: 0.001, max: 0.1, step: 0.001 },
-    wheelSensitivity: { value: 0.02, min: 0.1, max: 10, step: 0.1 },
+    dragSensitivity: { value: 0.1, min: 0.001, max: 0.3, step: 0.001 },
+    wheelSensitivity: { value: 0.2, min: 0.1, max: 10, step: 0.1 },
     mass: { value: 1, min: 0.1, max: 10 },
-    tension: { value: 150, min: 10, max: 500 },
+    tension: { value: 160, min: 10, max: 500 },
     friction: { value: 20, min: 1, max: 100 },
   });
 
@@ -66,6 +64,12 @@ const Experience = () => {
       precision: 0.01,
     },
   }));
+
+  const setGlobalX = useStore((state) => state.setX);
+
+  useFrame(() => {
+    setGlobalX(x.get());
+  });
 
   // Update spring config when Leva values change
   useEffect(() => {
@@ -142,6 +146,7 @@ const Experience = () => {
               rawRotation={[modelToDisplay.rotation[0], modelToDisplay.rotation[1], modelToDisplay.rotation[2]]}
               key={index + spacing}
               index={index}
+              spacing={spacing}
             />
           );
         })}

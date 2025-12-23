@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { useStore } from "../store";
 
 interface props {
   location: string;
@@ -11,8 +12,14 @@ interface props {
   index: number;
   rawPosition: [number, number, number];
   rawRotation: [number, number, number];
+  spacing: number;
 }
-const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation }: props) => {
+
+function lerp(start, end, t) {
+  return start * (1 - t) + end * t;
+}
+
+const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation, spacing }: props) => {
   const frame = useTexture([
     "/assets/frame1.png",
     "/assets/frame2.png",
@@ -40,22 +47,51 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
   }, []);
 
   useFrame(() => {
+    // Access the global x value without triggering re-renders
+    const globalX = useStore.getState().x;
+
+    // Calculate distance from center (0)
+    // currentX is the position relative to the center of the screen
+    const currentX = globalX + index * spacing;
+    const dist = Math.abs(currentX);
+
+    // Calculate scale factor: 1.0 at edges/outside, 1.5 at center (adjust 1.5 for more/less growth)
+    // Using cosine for smooth ease-in/out
+    const scaleRange = spacing - 2; // The distance over which scaling happens
+    let positionScaleFactor = 1;
+
+    if (dist < scaleRange) {
+      const normalizedDist = dist / scaleRange;
+      const curve = Math.cos(normalizedDist * (Math.PI / 2));
+      positionScaleFactor = 1 + curve * 0.5; // Max scale boost is 0.5 (1.5x total)
+    }
+    const rotation = (globalX / spacing) * Math.PI * 2;
+
     if (modelRef.current) {
       const { scaleProgress } = animationState.current;
-      modelRef.current.scale.set(
-        scale[0] + 0.05 * scaleProgress,
-        scale[1] + 0.05 * scaleProgress,
-        scale[2] + 0.05 * scaleProgress
-      );
-      backgroundRef.current.scale.set(
-        3 + 0.05 * scaleProgress,
-        3 + 0.05 * scaleProgress,
-        3 + 0.05 * scaleProgress
-      )
 
-      // Combine base rotation (from rawRotation) with the continuous animation
+      // Base scale + Hover effect
+      const baseScaleX = scale[0] + 0.05 * scaleProgress;
+      const baseScaleY = scale[1] + 0.05 * scaleProgress;
+      const baseScaleZ = scale[2] + 0.05 * scaleProgress;
+
+      // Apply position-based scaling
+      modelRef.current.scale.set(
+        baseScaleX * positionScaleFactor,
+        baseScaleY * positionScaleFactor,
+        baseScaleZ * positionScaleFactor
+      );
+
+      // Background scaling
+      const bgBaseScale = 3 + 0.05 * scaleProgress;
+      backgroundRef.current.scale.set(
+        bgBaseScale * positionScaleFactor,
+        bgBaseScale * positionScaleFactor,
+        bgBaseScale * positionScaleFactor
+      );
+
       modelRef.current.rotation.x = rawRotation[0];
-      modelRef.current.rotation.y += rawRotation[1] + 0.005;
+      modelRef.current.rotation.y = rawRotation[1] + rotation;
       modelRef.current.rotation.z = rawRotation[2];
     }
   });
@@ -72,7 +108,6 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
         onPointerOut={() => {
           timeline.current?.reverse();
         }}
-
       >
         <planeGeometry args={index % 2 == 0 ? [1.6, 2] as const : [2, 1.5] as const} />
         <meshStandardMaterial map={frame[index % 2]} transparent={true} />
