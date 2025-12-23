@@ -62,7 +62,6 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
       positionScaleFactor = 1 + curve * 1.0; // Max scale boost is 1.0 (2.0x total)
     }
     const rotation = (globalX / spacing) * Math.PI * 2;
-
     if (modelRef.current) {
       const { scaleProgress } = animationState.current;
 

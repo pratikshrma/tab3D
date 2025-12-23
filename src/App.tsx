@@ -23,7 +23,7 @@ const ResponsiveCamera = ({
 const App = () => {
   const { zoom } = useControls({
     "Camera Controls": folder({
-      zoom: { value: 53, min: 0.0, max: 90 },
+      zoom: { value: 50, min: 0.0, max: 90 },
     })
   })
 

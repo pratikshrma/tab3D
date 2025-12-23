@@ -7,10 +7,11 @@ import { useGesture } from "@use-gesture/react";
 import { useControls } from "leva";
 import { useFrame } from "@react-three/fiber";
 import { useStore } from "../store";
+import { useGLTF } from "@react-three/drei";
 
 const calculateSpacing = () => {
   const calc = (window.innerWidth / 170) * 1.3
-  return Math.max(6, calc)
+  return Math.max(8, calc)
 }
 
 const Experience = () => {
@@ -154,5 +155,10 @@ const Experience = () => {
     </>
   );
 };
+
+useGLTF.preload('/models/Vallaku.glb')
+useGLTF.preload('/models/Pot.glb')
+useGLTF.preload('/models/Nandi.glb')
+useGLTF.preload('/models/ExtraTABdecor.glb')
 
 export default Experience;
