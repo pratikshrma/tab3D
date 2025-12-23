@@ -6,10 +6,29 @@ import { a, useSpring } from "@react-spring/three";
 import { useGesture } from "@use-gesture/react";
 import { useControls } from "leva";
 
+const calculateSpacing = () => {
+  const calc = (window.innerWidth / 200) * 1.3
+  return Math.max(6, calc)
+}
+
 const Experience = () => {
+  const initialIndex = 50;
+
+
+
+  const [spacing, setSpacing] = useState(calculateSpacing());
+
+  useEffect(() => {
+    const handleResize = () => setSpacing(calculateSpacing());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const activeIndex = useRef(initialIndex);
+
   const baseModels = [
     { src: "/models/Vallaku.glb", scale: 0.8, position: [0, 0, 0], rotation: [0, 0, 0] },
-    { src: "/models/Pot.glb", scale: 0.9, position: [0, 0.5, 0], rotation: [Math.PI/12, 0, 0] },
+    { src: "/models/Pot.glb", scale: 0.9, position: [0, 0.5, 0], rotation: [Math.PI / 12, 0, 0] },
     { src: "/models/Nandi.glb", scale: 0.6, position: [0, 0, 0], rotation: [0, 0, 0] },
     { src: "/models/ExtraTABdecor.glb", scale: 10.0, position: [0, 0, 0], rotation: [0, 0, 0] },
   ];
@@ -18,11 +37,17 @@ const Experience = () => {
   const infiniteModels = Array(100).fill(baseModels).flat(); // Repeat 100 times
 
 
-  const initialSpacing = 6;
-  const initialIndex = 50;
+  useEffect(() => {
+    const handleWindowResizing = () => {
+      setSpacing(calculateSpacing())
+      console.log("Window width changed:", window.innerWidth);
+    };
+    window.addEventListener('resize', handleWindowResizing);
+    return () => {
+      window.removeEventListener('resize', handleWindowResizing);
+    };
+  }, []);
 
-  const [spacing] = useState(initialSpacing);
-  const activeIndex = useRef(initialIndex);
 
   const { dragSensitivity, wheelSensitivity, mass, tension, friction } = useControls("Carousel Settings", {
     dragSensitivity: { value: 0.02, min: 0.001, max: 0.1, step: 0.001 },
@@ -33,7 +58,7 @@ const Experience = () => {
   });
 
   const [{ x }, api] = useSpring(() => ({
-    x: -initialIndex * initialSpacing,
+    x: -initialIndex * spacing,
     config: {
       mass,
       tension,
@@ -115,7 +140,7 @@ const Experience = () => {
               scale={[modelToDisplay.scale, modelToDisplay.scale, modelToDisplay.scale]}
               rawPosition={[modelToDisplay.position[0], modelToDisplay.position[1], modelToDisplay.position[2]]}
               rawRotation={[modelToDisplay.rotation[0], modelToDisplay.rotation[1], modelToDisplay.rotation[2]]}
-              key={index}
+              key={index + spacing}
               index={index}
             />
           );

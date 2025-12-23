@@ -9,8 +9,8 @@ interface props {
   position: [number, number, number];
   scale: [number, number, number];
   index: number;
-  rawPosition:[number,number,number];
-  rawRotation:[number,number,number];
+  rawPosition: [number, number, number];
+  rawRotation: [number, number, number];
 }
 const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation }: props) => {
   const frame = useTexture([
@@ -74,7 +74,7 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
         }}
 
       >
-<planeGeometry args={index % 2 == 0 ? [1.6, 2] as const : [2, 1.5] as const} />
+        <planeGeometry args={index % 2 == 0 ? [1.6, 2] as const : [2, 1.5] as const} />
         <meshStandardMaterial map={frame[index % 2]} transparent={true} />
       </mesh>
       <primitive
