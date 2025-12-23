@@ -87,10 +87,11 @@ const Experience = () => {
   const bind = useGesture({
     onDrag: ({ down, movement: [mx] }) => {
       if (down) {
-        api.start({ x: -activeIndex.current * spacing + mx * dragSensitivity });
+        api.start({ x: -activeIndex.current * (spacing) + mx * dragSensitivity });
       } else {
         const currentX = x.get();
         const newIndex = Math.round(-currentX / spacing);
+        console.log(-currentX, " - ", spacing)
         activeIndex.current = newIndex;
         api.start({
           x: -activeIndex.current * spacing,
