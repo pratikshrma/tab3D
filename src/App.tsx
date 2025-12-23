@@ -29,7 +29,7 @@ const App = () => {
 
   const { color } = useControls({
     color: {
-      value: "#f5e6c9",
+      value: "#f7e5cd",
     },
   });
 

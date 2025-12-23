@@ -32,10 +32,10 @@ body,
 .vignette {
   background: linear-gradient(
     to right,
-    #e6d6bf 0%,
+    #f7e5cd 0%,
     transparent 30%,
     transparent 70%,
-    #e6d6bf 100%
+    #f7e5cd 100%
   );
   pointer-events: none;
 }
