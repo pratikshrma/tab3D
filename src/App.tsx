@@ -36,7 +36,7 @@ const App = () => {
       if (window.innerWidth < 800) {
         setZoom(20)
       } else {
-        setZoom(40)
+        setZoom(35)
       }
     }
     handleResize()
