@@ -15,7 +15,7 @@ const calculateSpacing = (setChangeThreshold: any) => {
   } else {
     setChangeThreshold(0.2)
   }
-  const calc = (window.innerWidth / 170) * 1.3
+  const calc = (window.innerWidth / 120) * 1.3
   return Math.max(9, calc)
 }
 
