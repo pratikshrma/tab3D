@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import Experience from "./Components/Experience";
-import { useControls } from "leva";
+import { Leva, useControls } from "leva";
 import * as THREE from 'three'
 import { Environment, OrthographicCamera } from "@react-three/drei";
 import { useEffect, useState } from "react";
@@ -60,6 +60,7 @@ const App = () => {
           outputColorSpace: THREE.SRGBColorSpace
         }}
       >
+        <Leva hidden />
         <ResponsiveCamera zoom={zoom} />
         <color attach="background" args={[color]} />
         <Environment files="/assets/warm_restaurant_1k.exr" />
