@@ -32,7 +32,6 @@ const App = () => {
   const [zoom, setZoom] = useState(50)
   useEffect(() => {
     const handleResize = () => {
-      console.log(window.innerWidth)
       if (window.innerWidth < 800) {
         setZoom(24)
       } else {
