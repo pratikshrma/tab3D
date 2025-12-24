@@ -1,8 +1,9 @@
 import { Canvas } from "@react-three/fiber";
 import Experience from "./Components/Experience";
-import { useControls, folder } from "leva";
+import { useControls } from "leva";
 import * as THREE from 'three'
 import { Environment, OrthographicCamera } from "@react-three/drei";
+import { useEffect, useState } from "react";
 
 const ResponsiveCamera = ({
   zoom,
@@ -21,11 +22,28 @@ const ResponsiveCamera = ({
 };
 
 const App = () => {
-  const { zoom } = useControls({
-    "Camera Controls": folder({
-      zoom: { value: 50, min: 0.0, max: 90 },
-    })
-  })
+  // const { zoom } = useControls({
+  //   "Camera Controls": folder({
+  //     zoom: { value: 50, min: 0.0, max: 90 },
+  //   })
+  // })
+
+
+  const [zoom, setZoom] = useState(50)
+  useEffect(() => {
+    const handleResize = () => {
+      console.log(window.innerWidth)
+      if (window.innerWidth < 800) {
+        setZoom(24)
+      } else {
+        setZoom(50)
+      }
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
 
   const { color } = useControls({
     color: {
@@ -36,7 +54,7 @@ const App = () => {
   return (
     <div className="canvas-container">
       <Canvas
-        dpr={1}
+        dpr={[1, 2]}
         gl={{
           alpha: true,
           toneMapping: THREE.NeutralToneMapping,
@@ -44,7 +62,6 @@ const App = () => {
         }}
       >
         <ResponsiveCamera zoom={zoom} />
-        {/* <Perf /> */}
         <color attach="background" args={[color]} />
         <Environment files="/assets/warm_restaurant_1k.exr" />
         <Experience />

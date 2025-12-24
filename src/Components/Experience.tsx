@@ -5,21 +5,27 @@ import * as THREE from "three";
 import { a, useSpring } from "@react-spring/three";
 import { useGesture } from "@use-gesture/react";
 import { useControls } from "leva";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useStore } from "../store";
 import { useGLTF } from "@react-three/drei";
 
-const calculateSpacing = () => {
+const calculateSpacing = (setChangeThreshold: any) => {
+  if (window.innerWidth < 800) {
+    setChangeThreshold(0.05)
+  } else {
+    setChangeThreshold(0.2)
+  }
   const calc = (window.innerWidth / 170) * 1.3
-  return Math.max(8, calc)
+  return Math.max(9, calc)
 }
 
 const Experience = () => {
   const initialIndex = 50;
-  const [spacing, setSpacing] = useState(calculateSpacing());
+  const [changeThreshold, setChangeThreshold] = useState(0.2)
+  const [spacing, setSpacing] = useState(calculateSpacing(setChangeThreshold));
 
   useEffect(() => {
-    const handleResize = () => setSpacing(calculateSpacing());
+    const handleResize = () => setSpacing(calculateSpacing(setChangeThreshold));
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -39,7 +45,7 @@ const Experience = () => {
 
   useEffect(() => {
     const handleWindowResizing = () => {
-      setSpacing(calculateSpacing())
+      setSpacing(calculateSpacing(setChangeThreshold))
     };
     window.addEventListener('resize', handleWindowResizing);
     return () => {
@@ -49,7 +55,7 @@ const Experience = () => {
 
 
   const { dragSensitivity, wheelSensitivity, mass, tension, friction } = useControls("Carousel Settings", {
-    dragSensitivity: { value: 0.02, min: 0.001, max: 0.3, step: 0.001 },
+    dragSensitivity: { value: 0.04, min: 0.001, max: 0.3, step: 0.001 },
     wheelSensitivity: { value: 0.2, min: 0.1, max: 10, step: 0.1 },
     mass: { value: 1, min: 0.1, max: 10 },
     tension: { value: 160, min: 10, max: 500 },
@@ -83,15 +89,25 @@ const Experience = () => {
   }, [spacing, api]);
 
   const groupRef = useRef<THREE.Group>(null!);
+  const { gl } = useThree();
 
-  const bind = useGesture({
+  useGesture({
     onDrag: ({ down, movement: [mx] }) => {
       if (down) {
         api.start({ x: -activeIndex.current * (spacing) + mx * dragSensitivity });
       } else {
         const currentX = x.get();
-        const newIndex = Math.round(-currentX / spacing);
-        console.log(-currentX, " - ", spacing)
+        const rawIndex = -currentX / spacing;
+
+        const diff = rawIndex - activeIndex.current;
+        let newIndex = activeIndex.current;
+
+        if (diff > changeThreshold) {
+          newIndex = Math.floor(rawIndex + (1 - changeThreshold));
+        } else if (diff < -changeThreshold) {
+          newIndex = Math.ceil(rawIndex - (1 - changeThreshold));
+        }
+
         activeIndex.current = newIndex;
         api.start({
           x: -activeIndex.current * spacing,
@@ -114,16 +130,12 @@ const Experience = () => {
         });
       }
     }
-  });
+  }, { target: gl.domElement });
 
 
   return (
     <>
       <Lights />
-      <mesh position={[0, 0, -2]} {...bind()}>
-        <planeGeometry args={[100, 10]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
       <a.group
         ref={groupRef}
         position-x={x}

@@ -16,6 +16,7 @@ body,
   position: relative;
   width: 100vw;
   height: 100vh;
+  touch-action:none;
 }
 
 /* Make the canvas and vignette stack on top of each other */
