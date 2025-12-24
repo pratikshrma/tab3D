@@ -33,10 +33,10 @@ const Experience = () => {
   const activeIndex = useRef(initialIndex);
 
   const baseModels = [
-    { src: "/models/Vallaku.glb", scale: 0.8, position: [0, 0, 0], rotation: [0, 0, 0] },
-    { src: "/models/Pot.glb", scale: 0.9, position: [0, 0.5, 0], rotation: [Math.PI / 12, 0, 0] },
-    { src: "/models/Nandi.glb", scale: 0.6, position: [0, 0, 0], rotation: [0, 0, 0] },
-    { src: "/models/ExtraTABdecor.glb", scale: 10.0, position: [0, 0, 0], rotation: [0, 0, 0] },
+    { src: "/models/Vallaku.glb", scale: 0.8, position: [0, 0, 0], rotation: [0, 0, 0], name: "Vallaku" },
+    { src: "/models/Pot.glb", scale: 0.9, position: [0, 0.5, 0], rotation: [Math.PI / 12, 0, 0], name: "Pot" },
+    { src: "/models/Nandi.glb", scale: 0.6, position: [0, 0, 0], rotation: [0, 0, 0], name: "Nandi" },
+    { src: "/models/ExtraTABdecor.glb", scale: 10.0, position: [0, 0, 0], rotation: [0, 0, 0], name: "Decor" },
   ];
 
   // Create an "infinite" list of models by repeating the base models
@@ -161,6 +161,7 @@ const Experience = () => {
               key={index + spacing}
               index={index}
               spacing={spacing}
+              name={modelToDisplay.name}
             />
           );
         })}

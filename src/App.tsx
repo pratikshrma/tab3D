@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import Experience from "./Components/Experience";
-import { Leva, useControls } from "leva";
+import { Leva } from "leva";
 import * as THREE from 'three'
 import { Environment, OrthographicCamera } from "@react-three/drei";
 import { useEffect, useState } from "react";

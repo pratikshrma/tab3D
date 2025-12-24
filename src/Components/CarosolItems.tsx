@@ -1,4 +1,4 @@
-import { useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF, useTexture, Html } from "@react-three/drei";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -13,9 +13,10 @@ interface props {
   rawPosition: [number, number, number];
   rawRotation: [number, number, number];
   spacing: number;
+  name: string;
 }
 
-const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation, spacing }: props) => {
+const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotation, spacing, name }: props) => {
   const frame = useTexture([
     "/assets/frame1.png",
     "/assets/frame2.png",
@@ -25,6 +26,7 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
   const { scene } = useGLTF(location);
   const modelRef = useRef<THREE.Group>(null!);
   const backgroundRef = useRef<THREE.Mesh>(null!)
+  const textRef = useRef<THREE.Group>(null!);
 
   const timeline = useRef<gsap.core.Timeline>(null!);
   const animationState = useRef({ scaleProgress: 0 });
@@ -88,6 +90,20 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
       modelRef.current.rotation.x = rawRotation[0];
       modelRef.current.rotation.y = rawRotation[1] + rotation;
       modelRef.current.rotation.z = rawRotation[2];
+
+      // Text positioning & scaling
+      if (textRef.current) {
+        // Apply the same scale factor to the text as the model
+        // We can add a bit of extra scale from hover if desired, or keep it consistent with the model
+        const textScale = positionScaleFactor;
+
+        textRef.current.scale.set(textScale, textScale, textScale);
+
+        // Adjust position based on scale to keep it relatively positioned below the model
+        // The offset needs to be scaled as well so the gap doesn't look too small/large
+        const textScaleFactor = positionScaleFactor * (1 + 0.05 * scaleProgress);
+        textRef.current.position.y = position[1] - (index % 2 == 0 ? 3.5 : 2.7) * textScaleFactor;
+      }
     }
   });
 
@@ -117,6 +133,20 @@ const CarosolItems = ({ location, position, scale, index, rawPosition, rawRotati
         ]}
         scale={scale}
       />
+      <group ref={textRef} position={[position[0], position[1], position[2]]}>
+        <Html center transform>
+          <div
+            style={{
+              color: "black",
+              fontSize: "15px",
+              fontFamily: "'Sometype Mono', monospace",
+              fontWeight: "600",
+              userSelect: "none",
+            }}>
+            {name}
+          </div>
+        </Html>
+      </group>
     </>
   );
 };
