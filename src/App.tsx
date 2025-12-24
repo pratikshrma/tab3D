@@ -45,12 +45,6 @@ const App = () => {
   }, [])
 
 
-  const { color } = useControls({
-    color: {
-      value: "#f7e5cd",
-    },
-  });
-
   return (
     <div className="canvas-container">
       <Canvas
@@ -63,8 +57,8 @@ const App = () => {
       >
         <Leva hidden />
         <ResponsiveCamera zoom={zoom} />
-        <color attach="background" args={[color]} />
-        <Environment files="/assets/warm_restaurant_1k.exr" />
+        <color attach="background" args={['#f7e5cd']} />
+        < Environment files="/assets/warm_restaurant_1k.exr" />
         <Experience />
         <Preload all />
       </Canvas>
