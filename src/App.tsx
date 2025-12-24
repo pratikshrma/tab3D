@@ -4,6 +4,7 @@ import { Leva, useControls } from "leva";
 import * as THREE from 'three'
 import { Environment, OrthographicCamera } from "@react-three/drei";
 import { useEffect, useState } from "react";
+import { Preload } from "@react-three/drei";
 
 const ResponsiveCamera = ({
   zoom,
@@ -65,6 +66,7 @@ const App = () => {
         <color attach="background" args={[color]} />
         <Environment files="/assets/warm_restaurant_1k.exr" />
         <Experience />
+        <Preload all />
       </Canvas>
       <div className="vignette" />
     </div>
