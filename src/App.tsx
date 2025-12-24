@@ -23,20 +23,21 @@ const ResponsiveCamera = ({
 };
 
 const App = () => {
-  // const { zoom } = useControls({
-  //   "Camera Controls": folder({
-  //     zoom: { value: 50, min: 0.0, max: 90 },
-  //   })
-  // })
-
 
   const [zoom, setZoom] = useState(50)
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 800) {
-        setZoom(20)
-      } else {
+      //   if (window.innerWidth < 800) {
+      //     setZoom(20)
+      //   } else {
+      //     setZoom(35)
+      //   }
+      if (window.innerWidth > 1600) {
+        setZoom(45)
+      } else if (window.innerWidth < 1600 && window.innerWidth > 800) {
         setZoom(35)
+      } else {
+        setZoom(20)
       }
     }
     handleResize()
